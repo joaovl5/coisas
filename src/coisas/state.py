@@ -24,6 +24,7 @@ class GlobalState:
   cli_factory: CLIPanelFactory = Factory(
     lambda self: CLIPanelFactory(
       console=self.rich_console,
+      default_panel_height=15,
     ),
     takes_self=True,
   )

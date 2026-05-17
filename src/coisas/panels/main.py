@@ -2,7 +2,17 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING, Self
 
 from attrs import define
-from rich.box import ASCII, ROUNDED, Box
+from rich.box import (
+  ASCII,
+  HEAVY_HEAD,
+  HORIZONTALS,
+  MARKDOWN,
+  MINIMAL,
+  MINIMAL_HEAVY_HEAD,
+  ROUNDED,
+  SIMPLE_HEAVY,
+  Box,
+)
 from rich.live import Live
 from rich.panel import Panel
 from rich.text import Text
@@ -14,6 +24,30 @@ if TYPE_CHECKING:
   from collections.abc import Generator
 
   from rich.console import Console
+
+
+# fmt: off
+THE_BOX: Box = Box(
+    "══╤═\n"
+    "    \n"
+    "    \n"
+    "    \n"
+    " ── \n"
+    " ── \n"
+    "    \n"
+    "▔▔▔▔\n"
+)
+THE_BOX_PENDING: Box = Box(
+    "+--+\n"
+    "    \n"
+    "    \n"
+    "    \n"
+    "|-+|\n"
+    "|-+|\n"
+    "    \n"
+    "+--+\n"
+)
+# fmt: on
 
 
 @define
@@ -87,10 +121,11 @@ class PanelObject:
   def _make_panel(self, text: Text) -> Panel:
     return Panel(
       renderable=text,
-      title=self.title,
+      title=f"{self.title}",
       title_align="left",
       border_style=self.border_style,
       box=self.box_style,
+      padding=(0, 0),
     )
 
   def _ensure_live(self) -> None:
@@ -107,20 +142,22 @@ class PanelObject:
 
   def _update_status(self) -> None:
     """Update panel's status-related styles."""
+    box_done = THE_BOX
+    box_pending = THE_BOX_PENDING
     match self.status:
       case PanelStatus.Done():
-        self.box_style = ROUNDED
-        self.border_style = (
+        self.box_style = box_done
+        self.border_style = "bold " + (
           "green" if self.status.warning is None else "yellow"
         )
         self.show_all = False
       case PanelStatus.Pending():
-        self.box_style = ASCII
+        self.box_style = box_pending
         self.border_style = "dim"
         self.show_all = False
       case PanelStatus.Failed():
-        self.box_style = ROUNDED
-        self.border_style = "red"
+        self.box_style = box_done
+        self.border_style = "bold red"
         self.show_all = True
 
   def set_status(self, status: PanelStatus.Type) -> None:
