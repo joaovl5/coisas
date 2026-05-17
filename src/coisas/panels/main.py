@@ -2,17 +2,7 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING, Self
 
 from attrs import define
-from rich.box import (
-  ASCII,
-  HEAVY_HEAD,
-  HORIZONTALS,
-  MARKDOWN,
-  MINIMAL,
-  MINIMAL_HEAVY_HEAD,
-  ROUNDED,
-  SIMPLE_HEAVY,
-  Box,
-)
+from rich.box import ASCII, Box
 from rich.live import Live
 from rich.panel import Panel
 from rich.text import Text

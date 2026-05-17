@@ -6,7 +6,7 @@ from rich import print as rprint
 
 from coisas.commands.shell import ShellCommand, ShellCommandProgram
 from coisas.state import GlobalState
-from coisas.templates import process_shell_template
+from coisas.templates import get_shell_template_params, process_shell_template
 
 if TYPE_CHECKING:
   from coisas.commands.shell import ShellArgsType
@@ -61,3 +61,23 @@ def run(
     command=command,
     description=description or f"Running {program.render_str}",
   )
+
+
+def run_pat(*cmds: Template) -> None:
+  """Run commands, skipping those if `gils` param has no matches.
+
+  Will expect commands to have either zero or one params of type
+  `GitLsFilesShellParam`.
+  """
+  for cmd in cmds:
+    cmd_params = get_shell_template_params(cmd)
+    # this will at most expect one param of type to be `gils` in `cmd`
+    if cmd_params:
+      cmd_param = cmd_params.pop()
+      cmd_name = cmd.strings[0].split(" ")[0].strip()
+      if len(cmd_param.expand()) == 0:
+        p(
+          f"[yellow dim]Skipping [bold]{cmd_name}[/bold] due to zero matching files"
+        )
+        continue
+    run(cmd)
