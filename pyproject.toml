@@ -1,0 +1,151 @@
+[project]
+  name = "coisas"
+  version = "0.1.0"
+  description = "'coisas' or 'stuff' for aiding in writing scripts"
+  readme = "README.md"
+  authors = [
+    { name = "Joao Pedro", email = "vieiraleao2005@gmail.com" },
+  ]
+  requires-python = ">=3.14"
+  dependencies = [
+    "attrs>=26.1.0",
+    "pydantic>=2.13.4",
+    "rich>=15.0.0",
+  ]
+
+[build-system]
+  requires      = ["uv_build>=0.11.7,<0.12.0"]
+  build-backend = "uv_build"
+
+[dependency-groups]
+  dev = [
+    "basedpyright>=1.39.4",
+    "pytest>=9.0.3",
+    "ruff>=0.15.13",
+]
+
+[tool.ruff]
+  line-length    = 78
+  indent-width   = 2
+  target-version = "py314"
+  [tool.ruff.format]
+    docstring-code-format = true
+
+  [tool.ruff.lint]
+    select = [
+      # keep-sorted start
+      "A",
+      "ASYNC",
+      "B",
+      "BLE",
+      "C4",
+      "C90",
+      "D",
+      "DTZ",
+      "E",
+      "EM",
+      "ERA",
+      "F",
+      "FBT",
+      "FLY",
+      "FURB",
+      "G",
+      "I",
+      "ICN",
+      "INP",
+      "INT",
+      "ISC",
+      "LOG",
+      "N",
+      "NPY",
+      "PERF",
+      "PGH",
+      "PIE",
+      "PL",
+      "PT",
+      "PTH",
+      "PYI",
+      "Q",
+      "RET",
+      "RSE",
+      "RUF",
+      "S",
+      "SIM",
+      "SLF",
+      "SLOT",
+      "T10",
+      "T20",
+      "TC",
+      "TID",
+      "TRY",
+      "UP",
+      "W",
+      "YTT",
+      # keep-sorted end
+    ]
+    ignore = [
+      # keep-sorted start
+      "D100",
+      "D101",
+      "D203",
+      "D213",
+      "E501",
+      "PGH003",
+      "RET504",
+      "S101",
+      "S307",
+      # keep-sorted end
+    ]
+    unfixable = [
+      # keep-sorted start
+      "ERA001",
+      "F401",
+      "F841",
+      "T201",
+      "T203",
+      # keep-sorted end
+    ]
+
+    [tool.ruff.lint.per-file-ignores]
+      "**/*.test.py" = [
+        # omit "invalid module name" errors
+        "N999",
+        # omit implicit namespace package errors
+        "INP001",
+        # omit private usage errors
+        "SLF001",
+        # omit "magic value" errors
+        "PLR2004",
+      ]
+    [tool.ruff.lint.pylint]
+      max-branches = 10
+      max-locals   = 10
+
+[tool.basedpyright]
+  exclude                     = ["**/__pycache__", "**/node_modules", "**/venv", "**/.venv"]
+  typeCheckingMode            = "recommended"
+  failOnWarnings              = true
+  enableReachabilityAnalysis  = true
+  analyzeUnannotatedFunctions = true
+
+  # keeps "Any" for exceptional cases
+  reportExplicitAny = false
+  reportAny         = false
+
+  # let ruff handle private usage warnings (so we exclude them on tests)
+  reportPrivateUsage = false
+
+  # - other misc. tweaks
+  # keep-sorted start
+  reportCallInDefaultInitializer      = true
+  reportImplicitOverride              = true
+  reportImplicitStringConcatenation   = false
+  reportMissingParameterType          = true
+  reportMissingSuperCall              = false
+  reportMissingTypeStubs              = false
+  reportUninitializedInstanceVariable = false
+  reportUnknownArgumentType           = true
+  reportUnknownMemberType             = true
+  reportUnknownParameterType          = true
+  reportUnknownVariableType           = true
+  # keep-sorted end

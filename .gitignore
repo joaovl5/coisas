@@ -1,0 +1,6 @@
+# keep-sorted start
+.direnv
+.venv
+/.pre-commit-config.yaml
+venv
+# keep-sorted end

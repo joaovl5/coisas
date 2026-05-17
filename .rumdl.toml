@@ -1,0 +1,35 @@
+[global]
+  exclude = [
+    ".git",
+    ".github",
+    "node_modules",
+    "vendor",
+    "dist",
+    "build",
+  ]
+  respect-gitignore = true
+  flavor = "default"
+
+[MD013]
+  line-length = 78
+  code-blocks = false
+  tables      = false
+  headings    = false
+  reflow      = true
+  reflow-mode = "default"
+
+[MD036]
+  fix           = true
+  heading-level = 4
+  heading-style = "atx"
+
+[MD041]
+  fix                        = true
+  front-matter-title-pattern = "^(name|title):"
+
+[MD004]
+  style = "asterisk" # Unordered list style (asterisk, plus, dash, consistent)
+
+[MD076]
+  style                    = "tight"
+  allow-loose-continuation = true
