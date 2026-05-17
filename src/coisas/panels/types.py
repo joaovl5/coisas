@@ -1,16 +1,6 @@
-from typing import TYPE_CHECKING, Annotated, Literal, Protocol, final
+from typing import Annotated, Literal, final
 
-from attrs import define
 from pydantic import BaseModel, Discriminator, Field
-
-if TYPE_CHECKING:
-  from rich.text import Text
-
-
-class AppendLineFn(Protocol):
-  def __call__(self, line: str | Text, style: str | None = None) -> int:
-    """Append a line to panel."""
-    ...
 
 
 @final
@@ -45,29 +35,3 @@ class PanelStatus:
     Done | Pending | Failed,
     Discriminator("kind"),
   ]
-
-
-class SetStatusFn(Protocol):
-  def __call__(self, status: PanelStatus.Type) -> None:
-    """Set panel's state to some status."""
-    ...
-
-
-class UpdateLineFn(Protocol):
-  def __call__(
-    self,
-    index: int,
-    line: str | Text,
-    style: str | None = None,
-  ) -> None:
-    """Update a line of panel."""
-    ...
-
-
-@define
-class PanelWriter:
-  """Wrapper for writing to a panel."""
-
-  append_line: AppendLineFn
-  update_line: UpdateLineFn
-  set_status: SetStatusFn

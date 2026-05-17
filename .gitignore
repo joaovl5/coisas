@@ -2,5 +2,6 @@
 .direnv
 .venv
 /.pre-commit-config.yaml
+__pycache__
 venv
 # keep-sorted end
