@@ -1,8 +1,7 @@
 import subprocess
 from collections.abc import Generator
-from contextlib import _GeneratorContextManager, contextmanager
-from functools import partial
-from typing import TYPE_CHECKING, Any, Self
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, Self
 
 from attrs import define
 from rich.box import ASCII, ROUNDED, Box
@@ -112,17 +111,17 @@ class PanelObject:
   def _update_status(self) -> None:
     """Update panel's status-related styles."""
     match self.status:
-      case PanelStatus.Done:
+      case PanelStatus.Done():
         self.box_style = ROUNDED
         self.border_style = (
           "green" if self.status.warning is None else "yellow"
         )
         self.show_all = False
-      case PanelStatus.Pending:
+      case PanelStatus.Pending():
         self.box_style = ASCII
         self.border_style = "dim"
         self.show_all = False
-      case PanelStatus.Failed:
+      case PanelStatus.Failed():
         self.box_style = ROUNDED
         self.border_style = "red"
         self.show_all = True
@@ -196,17 +195,17 @@ class CLIPanelFactory(PanelFactory):
     prefix: str
     style: str
     match status:
-      case PanelStatus.Done:
+      case PanelStatus.Done():
         if status.warning:
           prefix = "WARNING"
           style = "yellow"
         else:
           prefix = "DONE"
           style = "green"
-      case PanelStatus.Pending:
+      case PanelStatus.Pending():
         prefix = "PENDING"
         style = "blue"
-      case PanelStatus.Failed:
+      case PanelStatus.Failed():
         prefix = "FAILED"
         style = "red bold"
       case _:
@@ -231,17 +230,21 @@ class CLIPanelFactory(PanelFactory):
     command_executable: ShellArgsType | None = None,
     writer: PanelWriter | None = None,
   ) -> int:
-    writer_context: _GeneratorContextManager[PanelWriter] | None = None
-    if not writer:
-      writer_context = self.get_panel(
+    if writer is None:
+      with self.get_panel(
         title=title,
         prelude=[],
-      )
-      writer = writer_context.__enter__()
+      ) as panel_writer:
+        return self._stream_command(
+          title=title,
+          process=process,
+          command_line=command_line,
+          command_executable=command_executable,
+          writer=panel_writer,
+        )
 
     command_line_idx: int = writer.append_line(
       line=command_line,
-      style="dim",
     )
     if process.stdout is not None:
       for line in process.stdout:
@@ -271,8 +274,6 @@ class CLIPanelFactory(PanelFactory):
         style="red",
       )
     writer.set_status(return_status)
-    if writer_context:
-      _ = writer_context.__exit__(None, None, None)
     return return_code
 
   def run_command(
@@ -311,15 +312,6 @@ class CLIPanelFactory(PanelFactory):
         bufsize=1,
         universal_newlines=True,
       )
-      return_code: int = self._stream_command(
-        title=panel_title,
-        command_line=command_line,
-        command_executable=command_executable,
-        process=process,
-        writer=writer,
-      )
-      if error_msg is not None and return_code not in ok_codes:
-        raise error_cls(error_msg)  # noqa: TRY301
     except Exception as exc:
       msg = f"Failed to run command: {exc}"
       if writer:
@@ -339,6 +331,17 @@ class CLIPanelFactory(PanelFactory):
             border_style="red",
           )
         )
-      if error_msg:
+      if error_msg is not None:
         raise error_cls(error_msg) from exc
       return 1
+    return_code: int = self._stream_command(
+      title=panel_title,
+      command_line=command_line,
+      command_executable=command_executable,
+      process=process,
+      writer=writer,
+    )
+
+    if error_msg is not None and return_code not in ok_codes:
+      raise error_cls(error_msg)
+    return return_code

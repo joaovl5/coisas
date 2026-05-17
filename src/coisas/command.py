@@ -110,7 +110,7 @@ def _default_nix_program(
 
 
 def _get_nix_flags() -> ShellArgsType:
-  return ["--option", "--experimental-features", "nix-command flakes"]
+  return ["--option", "experimental-features", "nix-command flakes"]
 
 
 @define(kw_only=True)
@@ -245,7 +245,6 @@ class SSHCommand(ShellCommand):
     return (
       Text()
       .append(_render_env(self.env))
-      .append("$ ", style="dim")
       .append(f"[ssh {self.config.host}]", style=self.program.render_style)
       .append(
         (" " + " ".join(self.args)) if self.args else "",
@@ -340,8 +339,13 @@ class SudoCommand(ShellCommand):
   @override
   def render(self) -> Text:
     return (
-      super()
-      .render()
+      Text()
+      .append(_render_env(self.env))
+      .append(self.program.render_str, style=self.program.render_style)
+      .append(
+        (" " + " ".join(self.args)) if self.args else "",
+        style="dim",
+      )
       .append(" ", style="dim")
       .append(self.inner_command.render())
     )
