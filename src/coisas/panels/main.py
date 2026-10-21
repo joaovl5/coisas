@@ -40,6 +40,18 @@ THE_BOX_PENDING: Box = Box(
 # fmt: on
 
 
+def make_some_panel(text: str, title: str, style: str) -> Panel:
+  """Generates a rich.Panel object."""
+  return Panel(
+    renderable=text,
+    title=title,
+    title_align="left",
+    border_style=style,
+    box=THE_BOX,
+    padding=(0, 0),
+  )
+
+
 @define
 class PanelFactory:
   console: Console
